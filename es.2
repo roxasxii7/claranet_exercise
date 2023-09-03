@@ -1,0 +1,24 @@
+Prima di inserire il comando in crontab si gestisce l'autenticazione client server generando una coppia di chiavi per l'autenticazione
+
+1.Generazione della coppia di chiavi
+ssh-keygen -t rsa -b 4096 
+
+2.
+ssh-copy-id user@192.168.1.100
+
+3.
+ssh user@192.168.1.100 "chmod 700 ~/.ssh"
+ssh user@192.168.1.100 "chmod 600 ~/.ssh/authorized_keys"
+
+4.Verifico che nel file di configurazione abbia questa configurazione, se cosi non fosse lo modifico tramite vi o nano
+vi /etc/ssh/sshd_config -> 
+	PubkeyAuthentication yes
+	ChallengeResponseAuthentication no
+	PasswordAuthentication no
+
+5.
+sudo service ssh restart
+
+6.Creazione della regola in crontab per eseguire il backup della directory /home/user in una directory d'esempio sul server. Il backup verrà eseguito tutte le domeniche a mezzanotte.
+crontab -e
+0 0 * * 0 rsync -az -e "ssh" /home/user user@192.168.1.100:/home/backup
